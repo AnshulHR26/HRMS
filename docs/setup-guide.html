@@ -1,0 +1,394 @@
+<title>HRMS Setup Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky table of contents on the left, one reading column on the right; stacks on phones. */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --fg: #141a2e;
+  --fg-2: #3c4560;
+  --muted: #69718a;
+  --line: #e1e4ee;
+  --accent: #3b5bdb;
+  --accent-soft: #eaeefe;
+  --code-bg: #0f1729;
+  --code-fg: #dbe3ff;
+  --ok: #067647; --ok-soft: #e7f7ee;
+  --warn: #b54708; --warn-soft: #fff4e5;
+  --font-body: "Public Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1220; --surface: #141b2d; --fg: #e8ecf8; --fg-2: #c3cadf; --muted: #8d96b0; --line: #26304a;
+    --accent: #8ea4ff; --accent-soft: #1d2747; --code-bg: #070b16; --code-fg: #dbe3ff;
+    --ok: #6fdba5; --ok-soft: #12291f; --warn: #fdb26b; --warn-soft: #2d1f0f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1220; --surface: #141b2d; --fg: #e8ecf8; --fg-2: #c3cadf; --muted: #8d96b0; --line: #26304a;
+  --accent: #8ea4ff; --accent-soft: #1d2747; --code-bg: #070b16; --code-fg: #dbe3ff;
+  --ok: #6fdba5; --ok-soft: #12291f; --warn: #fdb26b; --warn-soft: #2d1f0f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15.5px; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+a { color: var(--accent); }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-block: 40px 80px; }
+header.top { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.eyebrow { font: 600 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(30px, 4vw, 42px); line-height: 1.1; font-weight: 800; letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
+.lede { color: var(--fg-2); max-width: 68ch; margin: 0; font-size: 17px; }
+.stack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.chip { font: 500 12.5px/1 var(--font-mono); padding: 7px 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); color: var(--fg-2); }
+
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+nav.toc .toc-title { font: 600 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+nav.toc a { color: var(--fg-2); text-decoration: none; padding: 5px 10px; border-left: 2px solid var(--line); }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); border-left-color: var(--accent); outline: none; }
+
+main { min-width: 0; display: flex; flex-direction: column; gap: 52px; }
+section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 24px; }
+h2 { font-size: 23px; font-weight: 750; letter-spacing: -0.015em; margin: 0; display: flex; align-items: baseline; gap: 12px; text-wrap: balance; }
+h2 .n { font: 500 13px/1 var(--font-mono); color: var(--muted); }
+h3 { font-size: 16.5px; margin: 10px 0 0; font-weight: 700; }
+p { margin: 0; max-width: 72ch; color: var(--fg-2); }
+ul, ol { margin: 0; padding-left: 22px; color: var(--fg-2); display: flex; flex-direction: column; gap: 6px; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--accent-soft); color: var(--fg); padding: 1px 6px; border-radius: 4px; }
+
+.code { position: relative; background: var(--code-bg); border-radius: 10px; overflow: hidden; }
+.code pre { margin: 0; padding: 16px 18px; overflow-x: auto; font: 13.3px/1.65 var(--font-mono); color: var(--code-fg); }
+.code pre .c { color: #7d89ad; }
+.code .label { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px 8px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); font: 500 11.5px/1 var(--font-mono); color: #8e9ac0; letter-spacing: 0.04em; }
+.copy { font: 600 11.5px/1 var(--font-mono); background: rgba(255,255,255,0.08); color: #dbe3ff; border: 1px solid rgba(255,255,255,0.12); border-radius: 5px; padding: 6px 9px; cursor: pointer; }
+.copy:hover { background: rgba(255,255,255,0.15); }
+.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.table { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 11.5px/1.3 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg); white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+td.c, th.c { text-align: center; }
+.yes { color: var(--ok); font-weight: 700; }
+.no { color: var(--muted); }
+
+.callout { border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); background: var(--surface); }
+.callout strong { color: var(--fg); }
+.callout.warn { background: var(--warn-soft); border-color: transparent; }
+.callout.warn .tag { color: var(--warn); }
+.callout.ok { background: var(--ok-soft); border-color: transparent; }
+.callout.ok .tag { color: var(--ok); }
+.tag { font: 600 11.5px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; color: var(--fg-2); display: flex; flex-direction: column; gap: 4px; }
+.flow b { font: 600 12px/1 var(--font-mono); color: var(--accent); }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 28px 60px; }
+  nav.toc { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  nav.toc .toc-title { width: 100%; margin-bottom: 4px; }
+  nav.toc a { border: 1px solid var(--line); border-radius: 6px; padding: 4px 9px; font-size: 13px; background: var(--surface); }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Enterprise HRMS · Phases 1–4</span>
+    <h1>HRMS Setup Guide</h1>
+    <p class="lede">How to install, configure, run, test and deploy the Human Resource Management System, and how its security model works.</p>
+    <div class="stack">
+      <span class="chip">FastAPI</span><span class="chip">Python 3.12+</span><span class="chip">PostgreSQL 16</span>
+      <span class="chip">SQLAlchemy 2.0</span><span class="chip">Alembic</span><span class="chip">Pydantic v2</span>
+      <span class="chip">React 18 + TypeScript</span><span class="chip">Vite</span><span class="chip">Pytest</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <span class="toc-title">Contents</span>
+    <a href="#status">Build status</a>
+    <a href="#prereq">Prerequisites</a>
+    <a href="#database">Database</a>
+    <a href="#backend">Backend</a>
+    <a href="#env">Environment variables</a>
+    <a href="#frontend">Frontend</a>
+    <a href="#tests">Tests</a>
+    <a href="#docker">Docker</a>
+    <a href="#accounts">Demo accounts</a>
+    <a href="#rbac">Roles &amp; permissions</a>
+    <a href="#auth">Auth design</a>
+    <a href="#api">API map</a>
+    <a href="#prod">Production</a>
+    <a href="#trouble">Troubleshooting</a>
+    <a href="#extend">Phases 5–8</a>
+  </nav>
+
+  <main>
+    <section id="status">
+      <h2>Build status</h2>
+      <div class="callout warn">
+        <span class="tag">Not yet executed</span>
+        <p>All Phase 1–4 code, the migrations, the tests, Docker and the docs are written, lint-clean (ruff) and compile.
+        The build workspace's network policy refused <code>pypi.org</code> and <code>registry.npmjs.org</code>, so the packages couldn't be installed there.
+        <strong>That means the app has not run yet, and neither has the 61-test suite.</strong> Run section&nbsp;6 first on any machine with package access.</p>
+      </div>
+    </section>
+
+    <section id="prereq">
+      <h2><span class="n">01</span>Prerequisites</h2>
+      <div class="table"><table>
+        <thead><tr><th>Tool</th><th>Version</th><th>Check</th></tr></thead>
+        <tbody>
+          <tr><td>Python</td><td>3.12 or newer</td><td><code>python3 --version</code></td></tr>
+          <tr><td>PostgreSQL</td><td>14+ (16 recommended)</td><td><code>psql --version</code></td></tr>
+          <tr><td>Node.js / npm</td><td>20 LTS+ / 10+</td><td><code>node --version</code></td></tr>
+          <tr><td>Docker + Compose</td><td>optional, Compose v2</td><td><code>docker compose version</code></td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><strong>macOS:</strong> <code>brew install postgresql@16 &amp;&amp; brew services start postgresql@16</code></li>
+        <li><strong>Ubuntu/Debian:</strong> <code>sudo apt install postgresql &amp;&amp; sudo systemctl enable --now postgresql</code></li>
+        <li><strong>Windows:</strong> the EDB installer from postgresql.org (keep "Command Line Tools" ticked).</li>
+      </ul>
+    </section>
+
+    <section id="database">
+      <h2><span class="n">02</span>Database</h2>
+      <p>Create one application role and two databases: the app database, plus a disposable one for the tests.</p>
+      <div class="code"><div class="label"><span>psql</span><button class="copy" type="button">Copy</button></div><pre>sudo -u postgres psql &lt;&lt;'SQL'
+CREATE USER hrms WITH PASSWORD 'choose-a-strong-password' CREATEDB;
+CREATE DATABASE hrms OWNER hrms;
+CREATE DATABASE hrms_test OWNER hrms;
+SQL</pre></div>
+      <div class="callout"><span class="tag">Careful</span><p>The test suite drops and recreates the <code>public</code> schema of <code>hrms_test</code> on every run. Never point <code>TEST_DATABASE_URL</code> at data you want to keep.</p></div>
+    </section>
+
+    <section id="backend">
+      <h2><span class="n">03</span>Backend</h2>
+      <div class="code"><div class="label"><span>bash · backend/</span><button class="copy" type="button">Copy</button></div><pre>cd backend
+python3.12 -m venv .venv
+source .venv/bin/activate          <span class="c"># Windows: .venv\Scripts\activate</span>
+pip install -r requirements.txt
+cp .env.example .env               <span class="c"># fill in the values in section 04</span>
+
+alembic upgrade head               <span class="c"># tables, indexes, EMP-ID sequence, the 3 roles</span>
+python -m app.scripts.bootstrap_admin
+python -m app.scripts.seed_demo    <span class="c"># optional, development only</span>
+
+uvicorn app.main:app --reload --port 8000</pre></div>
+      <div class="flow">
+        <div><b>/docs</b>Swagger UI: log in, click Authorize, paste the token</div>
+        <div><b>/redoc</b>Reference docs</div>
+        <div><b>/api/v1/openapi.json</b>OpenAPI schema</div>
+        <div><b>/health</b>Liveness and database check</div>
+      </div>
+      <h3>Migration commands</h3>
+      <div class="code"><div class="label"><span>alembic</span><button class="copy" type="button">Copy</button></div><pre>alembic current          <span class="c"># 0001_initial_schema (head)</span>
+alembic history
+alembic downgrade -1
+alembic revision --autogenerate -m "describe change"
+alembic check            <span class="c"># fails if models and migrations drift</span></pre></div>
+    </section>
+
+    <section id="env">
+      <h2><span class="n">04</span>Environment variables</h2>
+      <p>Set these in <code>backend/.env</code>. No secret or credential is hardcoded anywhere in the code.</p>
+      <div class="table"><table>
+        <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>DATABASE_URL</code></td><td>required</td><td><code>postgresql+psycopg://hrms:&lt;pw&gt;@localhost:5432/hrms</code></td></tr>
+          <tr><td><code>TEST_DATABASE_URL</code></td><td>…/hrms_test</td><td>Disposable test database</td></tr>
+          <tr><td><code>JWT_SECRET_KEY</code></td><td>required</td><td>32+ characters. <code>python -c "import secrets; print(secrets.token_urlsafe(64))"</code></td></tr>
+          <tr><td><code>ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td>30</td><td>Token and cookie lifetime</td></tr>
+          <tr><td><code>ENVIRONMENT</code></td><td>development</td><td>development · test · production</td></tr>
+          <tr><td><code>CORS_ORIGINS</code></td><td>http://localhost:5173</td><td>Comma-separated list of exact origins</td></tr>
+          <tr><td><code>COOKIE_SECURE</code> / <code>COOKIE_SAMESITE</code></td><td>false / lax</td><td>Set <code>true</code> behind HTTPS</td></tr>
+          <tr><td><code>LOGIN_MAX_FAILED_ATTEMPTS</code> / <code>LOGIN_LOCKOUT_MINUTES</code></td><td>5 / 15</td><td>Brute-force lockout</td></tr>
+          <tr><td><code>BOOTSTRAP_ADMIN_USER_ID</code> / <code>_PASSWORD</code></td><td>admin / —</td><td>Initial admin (8+ characters, letters and digits)</td></tr>
+          <tr><td><code>DEMO_USER_PASSWORD</code></td><td>—</td><td>Password for every demo account</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="frontend">
+      <h2><span class="n">05</span>Frontend</h2>
+      <div class="code"><div class="label"><span>bash · frontend/</span><button class="copy" type="button">Copy</button></div><pre>cd frontend
+npm install
+cp .env.example .env
+npm run dev          <span class="c"># http://localhost:5173</span>
+npm run typecheck    <span class="c"># tsc --noEmit</span>
+npm run build        <span class="c"># production bundle in dist/</span></pre></div>
+      <p>The Vite dev server proxies <code>/api</code> to FastAPI (<code>VITE_PROXY_TARGET</code>), so the browser treats the UI and the API as one origin. That keeps the httpOnly cookie first-party.</p>
+    </section>
+
+    <section id="tests">
+      <h2><span class="n">06</span>Tests</h2>
+      <div class="code"><div class="label"><span>pytest · backend/</span><button class="copy" type="button">Copy</button></div><pre>pytest                       <span class="c"># full suite, real PostgreSQL</span>
+pytest -v tests/test_auth.py
+pytest -k deactivated</pre></div>
+      <p>The schema is built by running the Alembic migrations, so the migrations get tested too. Tables are truncated between tests.</p>
+      <div class="table"><table>
+        <thead><tr><th>File</th><th>Covers</th></tr></thead>
+        <tbody>
+          <tr><td><code>test_auth.py</code></td><td>Mandatory 1–7, plus cookie/CSRF, logout revocation, lockout, password change, Argon2</td></tr>
+          <tr><td><code>test_authorization.py</code></td><td>Mandatory 8–16, plus privilege escalation and self-modification guards</td></tr>
+          <tr><td><code>test_employees.py</code></td><td>Mandatory 17–23, plus pagination, search, filter, sort, manager cycles</td></tr>
+          <tr><td><code>test_org_and_database.py</code></td><td>Department/designation CRUD, reassign-then-delete, mandatory 24–26, dashboards</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="docker">
+      <h2><span class="n">07</span>Docker</h2>
+      <div class="code"><div class="label"><span>bash · repo root</span><button class="copy" type="button">Copy</button></div><pre>cp .env.docker.example .env      <span class="c"># edit every secret</span>
+docker compose up --build
+<span class="c"># UI   http://localhost:8080   (nginx serves the SPA and proxies /api)</span>
+<span class="c"># API  http://localhost:8000/docs</span>
+docker compose down -v           <span class="c"># reset, including the database volume</span></pre></div>
+      <p>On start, the backend container runs <code>alembic upgrade head</code> and the admin bootstrap. It also loads demo data when <code>SEED_DEMO_DATA=true</code>.</p>
+    </section>
+
+    <section id="accounts">
+      <h2><span class="n">08</span>Demo accounts</h2>
+      <div class="table"><table>
+        <thead><tr><th>User ID</th><th>Role</th><th>Person</th><th>Password</th></tr></thead>
+        <tbody>
+          <tr><td><code>admin</code></td><td>ADMIN</td><td>System account</td><td><code>BOOTSTRAP_ADMIN_PASSWORD</code></td></tr>
+          <tr><td><code>hr.manager</code></td><td>HR</td><td>Priya Sharma</td><td rowspan="4"><code>DEMO_USER_PASSWORD</code></td></tr>
+          <tr><td><code>hr.exec</code></td><td>HR</td><td>Rahul Verma</td></tr>
+          <tr><td><code>employee</code></td><td>EMPLOYEE</td><td>Ananya Iyer</td></tr>
+          <tr><td><code>arjun.mehta</code> and 7 more</td><td>EMPLOYEE</td><td>Engineering, Finance, Sales, Ops</td></tr>
+        </tbody>
+      </table></div>
+      <p>The seed creates 5 departments, 10 designations and 11 employees, with reporting lines. It goes through the real service layer, so Employee IDs run <code>EMP-00001</code> upward.</p>
+    </section>
+
+    <section id="rbac">
+      <h2><span class="n">09</span>Roles &amp; permissions</h2>
+      <p>The backend enforces every rule below through <code>Depends()</code> dependencies and service policy checks. The React route guards only shape the UI.</p>
+      <div class="table"><table>
+        <thead><tr><th>Capability</th><th class="c">Admin</th><th class="c">HR</th><th class="c">Employee</th></tr></thead>
+        <tbody>
+          <tr><td>Own dashboard and profile; edit own phone and address</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+          <tr><td>Employee directory, search, filter, any profile</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td></tr>
+          <tr><td>Create, update and deactivate employees</td><td class="c yes">✓</td><td class="c yes">✓ (not Admin-linked)</td><td class="c no">—</td></tr>
+          <tr><td>Create EMPLOYEE accounts</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td></tr>
+          <tr><td>Create HR or Admin accounts; assign roles</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Enable/disable accounts; reset passwords</td><td class="c yes">✓</td><td class="c yes">EMPLOYEE only</td><td class="c no">—</td></tr>
+          <tr><td>View departments and designations</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">own only</td></tr>
+          <tr><td>Manage, reassign and delete departments/designations</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Admin dashboard</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>HR dashboard</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td></tr>
+        </tbody>
+      </table></div>
+      <p>Nobody can change their own role or status, and the last active Admin can't be demoted. An employee who requests another employee's record gets <code>403</code>, even for IDs that don't exist.</p>
+    </section>
+
+    <section id="auth">
+      <h2><span class="n">10</span>Authentication design</h2>
+      <div class="table"><table>
+        <thead><tr><th>Token storage</th><th>XSS exposure</th><th>CSRF exposure</th><th>Used</th></tr></thead>
+        <tbody>
+          <tr><td>localStorage + Bearer</td><td>High: any injected script can read and replay it</td><td>None</td><td class="no">No</td></tr>
+          <tr><td>Memory only</td><td>Medium: lost on refresh, so it needs a refresh cookie anyway</td><td>None</td><td class="no">No</td></tr>
+          <tr><td><strong>httpOnly cookie + CSRF double-submit</strong></td><td>Low: scripts can't read the token</td><td>SameSite=Lax + <code>X-CSRF-Token</code></td><td class="yes">Yes</td></tr>
+        </tbody>
+      </table></div>
+      <ol>
+        <li>Login verifies the Argon2id hash. It issues an HS256 JWT with <code>sub</code>, <code>role</code>, <code>jti</code>, <code>ver</code>, <code>iat</code> and <code>exp</code>, and sets the <code>hrms_access_token</code> (httpOnly) and <code>hrms_csrf</code> cookies.</li>
+        <li>Axios sends cookies and echoes <code>hrms_csrf</code> in <code>X-CSRF-Token</code> on writes. Swagger and API clients use <code>Authorization: Bearer</code>.</li>
+        <li>Every request checks the signature (HS256 only), <code>exp</code>, the revoked-<code>jti</code> list, <code>token_version</code> and whether the account is active.</li>
+        <li>Logout deny-lists the <code>jti</code>. Password changes, password resets, role changes and deactivation bump <code>token_version</code>, which signs the user out everywhere.</li>
+        <li>After 5 failed logins the account is locked for 15 minutes. Existing sessions keep working, so mistyped passwords can't end someone's session.</li>
+      </ol>
+    </section>
+
+    <section id="api">
+      <h2><span class="n">11</span>API map</h2>
+      <div class="table"><table>
+        <thead><tr><th>Endpoint</th><th>Access</th></tr></thead>
+        <tbody>
+          <tr><td><code>POST /auth/login</code> · <code>GET /auth/me</code> · <code>POST /auth/logout</code> · <code>POST /auth/change-password</code></td><td>Public / authenticated</td></tr>
+          <tr><td><code>GET|POST /employees</code> · <code>GET|PUT /employees/{EMP-ID}</code> · <code>PATCH /employees/{EMP-ID}/status</code></td><td>HR, Admin (an employee may GET only their own record)</td></tr>
+          <tr><td><code>GET|PATCH /employees/me</code> · <code>GET /dashboard/me</code></td><td>Any user with a profile</td></tr>
+          <tr><td><code>GET|POST /users</code> · <code>PATCH /users/{id}[/status]</code> · <code>POST /users/{id}/reset-password</code></td><td>Admin; HR limited to EMPLOYEE accounts</td></tr>
+          <tr><td><code>PATCH /users/{id}/role</code> · <code>GET /dashboard/admin</code></td><td>Admin</td></tr>
+          <tr><td><code>GET /departments</code>, <code>/designations</code> · <code>GET /dashboard/hr</code> · <code>GET /roles</code></td><td>HR, Admin</td></tr>
+          <tr><td><code>POST|PUT|DELETE</code> departments and designations · <code>…/reassign-employees</code></td><td>Admin</td></tr>
+        </tbody>
+      </table></div>
+      <p>All paths are under <code>/api/v1</code>. Errors always use the same shape: <code>{"error": {"code", "message", "details"}}</code>.</p>
+    </section>
+
+    <section id="prod">
+      <h2><span class="n">12</span>Production checklist</h2>
+      <ul>
+        <li><code>ENVIRONMENT=production</code>, a new random <code>JWT_SECRET_KEY</code>, and database credentials kept in a secrets manager.</li>
+        <li>HTTPS only with <code>COOKIE_SECURE=true</code>, an exact <code>CORS_ORIGINS</code>, and the UI and API on the same site.</li>
+        <li>Never run <code>seed_demo</code> (it refuses in production). Rotate the bootstrap admin password after first login.</li>
+        <li>Run <code>alembic upgrade head</code> as a deployment step, then start several Uvicorn workers behind a reverse proxy.</li>
+        <li>Rate-limit <code>/auth/login</code> at the proxy, schedule <code>pg_dump</code> backups, and purge expired <code>revoked_tokens</code> rows.</li>
+      </ul>
+    </section>
+
+    <section id="trouble">
+      <h2><span class="n">13</span>Troubleshooting</h2>
+      <div class="table"><table>
+        <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Validation error on <code>JWT_SECRET_KEY</code> at start</td><td><code>.env</code> is missing, or the secret is shorter than 32 characters</td></tr>
+          <tr><td><code>connection refused</code></td><td>PostgreSQL isn't running, or the host or port in <code>DATABASE_URL</code> is wrong</td></tr>
+          <tr><td><code>relation "users" does not exist</code></td><td>Run <code>alembic upgrade head</code></td></tr>
+          <tr><td>UI shows "Cannot reach the server"</td><td>The backend isn't on <code>VITE_PROXY_TARGET</code>. Restart Vite after editing <code>.env</code></td></tr>
+          <tr><td><code>403 CSRF token missing or invalid</code></td><td>Cookies were blocked or cleared. Sign in again on the same origin</td></tr>
+          <tr><td><code>ACCOUNT_LOCKED</code></td><td>Wait for the lockout window, or have an admin reset the password</td></tr>
+          <tr><td>Tests: <code>permission denied for schema public</code></td><td><code>hrms_test</code> must be owned by the <code>hrms</code> user</td></tr>
+          <tr><td><code>pip</code> / <code>npm</code> can't resolve the registry</td><td>Allow network access to <code>pypi.org</code>, <code>files.pythonhosted.org</code> and <code>registry.npmjs.org</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="extend">
+      <h2><span class="n">14</span>Adding phases 5–8</h2>
+      <ol>
+        <li>Add <code>app/models/&lt;module&gt;.py</code> with FKs to <code>employees.id</code>, and import it in <code>app/models/__init__.py</code>.</li>
+        <li>Run <code>alembic revision --autogenerate -m "&lt;module&gt;"</code>, review the file, then upgrade.</li>
+        <li>Add the schema, the service and the router. Append the router to <code>API_ROUTERS</code>; <code>main.py</code> doesn't change.</li>
+        <li>Reuse <code>OwnEmployee</code> for self-service and <code>HRorAdminUser</code> for approvals. <code>reporting_manager_id</code> drives manager approval chains.</li>
+        <li>Add the pages, then add their sidebar entries in <code>frontend/src/components/navigation.ts</code>.</li>
+      </ol>
+    </section>
+
+    <footer>Covers HRMS v1.0 (Phases 1–4). The repository's <code>SETUP.md</code>, <code>README.md</code> and <code>docs/ARCHITECTURE.md</code> hold the same material.</footer>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll(".code").forEach(function (block) {
+  var btn = block.querySelector(".copy");
+  var pre = block.querySelector("pre");
+  if (!btn || !pre) return;
+  btn.addEventListener("click", function () {
+    var text = pre.innerText;
+    var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); };
+    try {
+      navigator.clipboard.writeText(text).then(done, function () { selectText(pre); });
+    } catch (e) { selectText(pre); }
+  });
+});
+function selectText(el) {
+  var range = document.createRange(); range.selectNodeContents(el);
+  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+}
+</script>
