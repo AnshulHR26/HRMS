@@ -1,0 +1,21 @@
+# Web framework
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.32
+
+# Validation / settings
+pydantic>=2.9,<3.0
+pydantic-settings>=2.7
+email-validator>=2.2
+
+# Database
+SQLAlchemy>=2.0.36,<2.1
+alembic>=1.14
+psycopg[binary]>=3.2
+
+# Security
+argon2-cffi>=23.1
+PyJWT>=2.10
+
+# Testing
+pytest>=8.3
+httpx>=0.28

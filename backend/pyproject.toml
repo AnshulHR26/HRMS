@@ -1,0 +1,17 @@
+[project]
+name = "hrms-backend"
+version = "1.0.0"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "B", "I", "UP"]
+ignore = ["E501", "UP046", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests"]
+known-third-party = ["alembic"]
