@@ -20,7 +20,8 @@ createdb -O hrms hrms_test    # used by the test suite
 cd backend
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # set DATABASE_URL, JWT_SECRET_KEY, BOOTSTRAP_ADMIN_PASSWORD, DEMO_USER_PASSWORD
+# create backend/.env with DATABASE_URL, TEST_DATABASE_URL, JWT_SECRET_KEY,
+# BOOTSTRAP_ADMIN_PASSWORD, DEMO_USER_PASSWORD (see SETUP.md §3.1)
 alembic upgrade head
 python -m app.scripts.bootstrap_admin
 python -m app.scripts.seed_demo          # optional demo data (dev only)
@@ -28,19 +29,11 @@ uvicorn app.main:app --reload            # http://localhost:8000/docs
 
 # 3. Frontend (new terminal)
 cd frontend
-npm install
-cp .env.example .env
+npm install                               # frontend/.env: VITE_API_BASE_URL, VITE_PROXY_TARGET (SETUP.md §4)
 npm run dev                               # http://localhost:5173
 
 # 4. Tests
 cd backend && pytest
-```
-
-## Docker
-
-```bash
-cp .env.docker.example .env   # edit the secrets
-docker compose up --build     # UI: http://localhost:8080 · API docs: http://localhost:8000/docs
 ```
 
 ## Demo accounts (after `seed_demo`)

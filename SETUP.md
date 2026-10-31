@@ -13,7 +13,6 @@ This guide covers installing, configuring, running, testing and deploying the HR
 | PostgreSQL | 14 or newer (16 recommended) | `psql --version` |
 | Node.js | 20 LTS or newer (22 recommended) | `node --version` |
 | npm | 10+ | `npm --version` |
-| Docker + Compose (optional) | Docker 24+, Compose v2 | `docker compose version` |
 | Git | any | `git --version` |
 
 ### Installing PostgreSQL
@@ -21,7 +20,6 @@ This guide covers installing, configuring, running, testing and deploying the HR
 * **macOS (Homebrew):** `brew install postgresql@16 && brew services start postgresql@16`
 * **Ubuntu/Debian:** `sudo apt install postgresql && sudo systemctl enable --now postgresql`
 * **Windows:** use the EDB installer from postgresql.org and keep "Command Line Tools" ticked.
-* **Docker only:** `docker compose up db` starts the database from `docker-compose.yml`.
 
 ---
 
@@ -57,8 +55,9 @@ python3.12 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install --upgrade pip
 pip install -r requirements.txt
-cp .env.example .env
 ```
+
+Then create `backend/.env` with the variables in the table below.
 
 ### 3.1 Environment variables (`backend/.env`)
 
@@ -151,9 +150,10 @@ curl -s localhost:8000/api/v1/employees?page_size=5 -H "Authorization: Bearer $T
 ```bash
 cd frontend
 npm install
-cp .env.example .env
 npm run dev                    # http://localhost:5173
 ```
+
+Create `frontend/.env` with these variables (the defaults work for local development):
 
 | Variable | Default | Purpose |
 |---|---|---|
@@ -195,25 +195,7 @@ Alembic migrations, so the migrations get tested too. Tables are truncated betwe
 
 ---
 
-## 6. Docker
-
-```bash
-cp .env.docker.example .env        # edit every secret
-docker compose up --build
-```
-
-| Service | URL | Notes |
-|---|---|---|
-| frontend (nginx) | <http://localhost:8080> | Serves the SPA and proxies `/api` to the backend |
-| backend | <http://localhost:8000/docs> | Runs `alembic upgrade head` and the admin bootstrap on start |
-| db | `localhost:5432` | Data persists in the `pgdata` volume |
-
-Set `SEED_DEMO_DATA=true` (with `DEMO_USER_PASSWORD`) to load the demo data on start.
-To reset everything, run `docker compose down -v`.
-
----
-
-## 7. Roles & permissions (enforced by the backend)
+## 6. Roles & permissions (enforced by the backend)
 
 | Capability | ADMIN | HR | EMPLOYEE |
 |---|:-:|:-:|:-:|
@@ -236,7 +218,7 @@ active ADMIN cannot be demoted or deactivated. Employees requesting another empl
 
 ---
 
-## 8. Authentication design & token-storage trade-offs
+## 7. Authentication design & token-storage trade-offs
 
 | Option | XSS exposure | CSRF exposure | Chosen? |
 |---|---|---|---|
@@ -260,7 +242,7 @@ How it works:
 
 ---
 
-## 9. Production checklist
+## 8. Production checklist
 
 * `ENVIRONMENT=production`, a fresh random `JWT_SECRET_KEY`, strong database credentials kept in a secrets manager.
 * Serve over HTTPS only; set `COOKIE_SECURE=true`. Keep the UI and API on the same site, or set `COOKIE_SAMESITE=none` and an exact `CORS_ORIGINS`.
@@ -272,7 +254,7 @@ How it works:
 
 ---
 
-## 10. Troubleshooting
+## 9. Troubleshooting
 
 | Symptom | Fix |
 |---|---|
@@ -288,7 +270,7 @@ How it works:
 
 ---
 
-## 11. Extending with phases 5–8
+## 10. Extending with phases 5–8
 
 1. Add `app/models/<module>.py` with FKs to `employees.id`, and import it in `app/models/__init__.py`.
 2. `alembic revision --autogenerate -m "<module>"`, review the file, then `alembic upgrade head`.
