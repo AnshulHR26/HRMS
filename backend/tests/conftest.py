@@ -10,7 +10,14 @@ from datetime import date
 from typing import Any
 
 # --- configure the app for tests BEFORE importing it --------------------------------------
-_TEST_DB = os.environ.get("TEST_DATABASE_URL", "postgresql+psycopg://hrms:hrms_dev_password@localhost:5432/hrms_test")
+from dotenv import dotenv_values  # noqa: E402  (installed with pydantic-settings)
+
+_ENV_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+_TEST_DB = (
+    os.environ.get("TEST_DATABASE_URL")
+    or dotenv_values(_ENV_FILE).get("TEST_DATABASE_URL")  # backend/.env
+    or "postgresql+psycopg://hrms:hrms_dev_password@localhost:5432/hrms_test"
+)
 os.environ["DATABASE_URL"] = _TEST_DB
 os.environ["ENVIRONMENT"] = "test"
 os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-that-is-long-enough-for-hs256-0123456789")

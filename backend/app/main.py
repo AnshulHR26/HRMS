@@ -4,6 +4,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from sqlalchemy import text
 
 from app.core.config import settings
@@ -46,6 +47,11 @@ def create_app() -> FastAPI:
 
     for router in API_ROUTERS:
         app.include_router(router, prefix=settings.API_V1_PREFIX)
+
+    @app.get("/", include_in_schema=False)
+    def root() -> RedirectResponse:
+        """Opening the bare API address shows the interactive docs."""
+        return RedirectResponse(url="/docs")
 
     @app.get("/health", tags=["Health"], summary="Liveness + database connectivity")
     def health() -> dict[str, str]:
