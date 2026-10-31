@@ -1,22 +1,40 @@
-# Python
+# ---------- Secrets (never commit) ----------
+.env
+.env.*
+*.pem
+*.key
+
+# ---------- Python / backend ----------
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
+venv/
+env/
 .pytest_cache/
+.coverage
+htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Env / secrets
-.env
-*.env.local
-!.env.example
-!.env.docker.example
-
-# Node
+# ---------- Node / frontend ----------
 node_modules/
 dist/
+dist-ssr/
+*.local
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# OS / editors
-.DS_Store
-.idea/
+# ---------- Logs ----------
+*.log
+logs/
+
+# ---------- Editors & OS ----------
 .vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
